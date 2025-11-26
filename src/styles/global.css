@@ -1,0 +1,383 @@
+:root {
+    --bg-primary: #0f1115;
+    --bg-secondary: #141821;
+    --bg-tertiary: #1b2130;
+    --border-color: #22283a;
+    --text-primary: #e6e6e6;
+    --text-secondary: #a0a0a0;
+    --accent: #7fd1ff;
+    --success: #47d35c;
+    --warning: #ffa500;
+    --error: #ff6b6b;
+    --highlight-stmt: #47d35c;
+    --highlight-block: #4ea3ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Loading Screen */
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bg-tertiary);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Compiler View */
+.compiler-view {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    gap: 20px;
+}
+
+.app-header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.status-bar {
+    flex: 1;
+    padding: 4px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.status-bar.error {
+    color: var(--error);
+}
+
+.nav-link {
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    transition: background 0.2s;
+}
+
+.nav-link:hover {
+    background: #222a3d;
+}
+
+.setting-warning {
+    color: #b45309;
+    margin-top: 8px;
+}
+
+/* Panel Layout */
+.panel-layout-container {
+    flex: 1;
+    position: relative;
+}
+
+/* Source Panel */
+.source-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.source-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.compile-btn {
+    padding: 6px 16px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.compile-btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.compile-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.checkbox-label,
+.select-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+.select-label select {
+    padding: 4px 8px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.editor-container {
+    flex: 1;
+    position: relative;
+}
+
+/* Monaco Editor Container */
+.monaco-editor-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.source-editor,
+.ir-viewer,
+.asm-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+/* IR/ASM Panels */
+.ir-panel,
+.asm-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Highlighting */
+.highlight-stmt {
+    background-color: rgba(71, 211, 92, 0.2) !important;
+    font-weight: bold;
+}
+
+.highlight-block {
+    background-color: rgba(78, 163, 255, 0.15) !important;
+}
+
+.inline-highlight-stmt {
+    background-color: rgba(71, 211, 92, 0.25);
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+.inline-highlight-block {
+    background-color: rgba(78, 163, 255, 0.2);
+    border-radius: 2px;
+}
+
+/* Settings Page */
+.nav-page {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.nav-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.back-link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.nav-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.nav-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.nav-section h2 {
+    margin-bottom: 20px;
+    color: var(--accent);
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.setting-item label {
+    min-width: 120px;
+}
+
+.setting-item input[type="number"],
+.setting-item select {
+    padding: 6px 10px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.setting-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+/* Golden Layout Overrides */
+.lm_goldenlayout {
+    background: var(--bg-primary);
+}
+
+.lm_content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+/* Ensure GoldenLayout content area is a positioning context so
+   mount nodes can use absolute inset:0 to fill it. */
+.lm_content {
+    position: relative;
+}
+
+/* Portal mount nodes created for each panel. These fill their
+   GoldenLayout content area and expose a flex column so panel
+   internals using 100% heights work correctly. */
+#source-panel-mount,
+#ir-panel-mount,
+#asm-panel-mount {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.lm_header {
+    background: var(--bg-secondary);
+    height: 30px;
+}
+
+.lm_tab {
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    margin-right: 2px;
+}
+
+.lm_active .lm_tab {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.lm_splitter {
+    background: var(--border-color);
+}
+
+.lm_splitter:hover {
+    background: var(--accent);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .app-header {
+        flex-wrap: wrap;
+    }
+
+    .source-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Light theme overrides applied when `theme-light` is on the body */
+.theme-light {
+    --bg-primary: #f6f7fb;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f3f4f6;
+    --border-color: #e6e9ef;
+    --text-primary: #0b1220;
+    --text-secondary: #4b5563;
+    --accent: #0b7bd1;
+    --success: #047857;
+    --warning: #b45309;
+    --error: #dc2626;
+    --highlight-stmt: #16a34a;
+    --highlight-block: #2563eb;
+}
+
+/* Ensure a dark helper class exists if needed */
+.theme-dark {
+    /* no-op: variables defined in :root are dark by default */
+}

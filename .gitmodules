@@ -1,0 +1,4 @@
+[submodule "lib/sigma16-compiler"]
+	path = lib/sigma16-compiler
+	url = git@github.com:danial09/sigma16-compiler.git
+	branch = 0.2.0
