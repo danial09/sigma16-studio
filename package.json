@@ -4,7 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "wasm": "wasm-pack build ./lib/sigma16-compiler/s16-wasm --target web",
+    "wasm-branch": "git config -f .gitmodules submodule.lib/sigma16-compiler.branch",
+    "wasm-update": "git submodule update --remote lib/sigma16-compiler",
+    "wasm-build": "wasm-pack build ./lib/sigma16-compiler/s16-wasm --target web",
+    "wasm": "npm run wasm-update && npm run wasm-build",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",

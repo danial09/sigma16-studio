@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useCompiler } from '@/contexts/CompilerContext';
 import MonacoEditor from '../common/MonacoEditor';
-import { examples, examplesList } from './examples';
+// Toolbar moved to its own component: PanelToolbar
 import { SIGMA16_SOURCE_LANG_ID } from '@/languages/source';
 import { collectIrHighlightsForAst, pickAstIdForPosition } from '@/services/highlighting';
 
@@ -23,18 +23,7 @@ const SourcePanel: React.FC = () => {
         return () => clearInterval(checkMount);
     }, []);
 
-    const handleCompile = async () => {
-        await compile();
-    };
-
-    const handleExampleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const key = e.target.value;
-        if (!key) return;
-        const example = (examples as Record<string, string>)[key];
-        if (example != null) {
-            updateSource(example);
-        }
-    };
+    // Use `compile` directly where needed; toolbar is rendered separately.
 
     const clearIrHighlights = useCallback(() => {
         lastAstRef.current = null;
@@ -68,30 +57,7 @@ const SourcePanel: React.FC = () => {
 
     const content = (
         <div className="source-panel">
-            <div className="source-toolbar">
-                <button
-                    className="compile-btn"
-                    onClick={handleCompile}
-                    disabled={state.isCompiling}
-                >
-                    {state.isCompiling ? 'Compiling...' : 'Compile'}
-                </button>
-                <label className="examples-label" style={{ marginLeft: 12 }}>
-                    Examples:
-                    <select
-                        className="examples-select"
-                        defaultValue=""
-                        onChange={handleExampleSelect}
-                        style={{ marginLeft: 8 }}
-                    >
-                        <option value="">Load example...</option>
-                        {examplesList.map((ex) => (
-                            <option key={ex.key} value={ex.key}>{ex.label}</option>
-                        ))}
-                    </select>
-                </label>
-                {/* Moved Emit ASM and Register Allocator into Settings page */}
-            </div>
+            {/* Toolbar moved out to `PanelToolbar` to align editors horizontally */}
             <div className="editor-container">
                 <MonacoEditor
                     value={state.source}
@@ -102,7 +68,7 @@ const SourcePanel: React.FC = () => {
                     rangeHighlights={state.sourceHighlights}
                     onMouseMove={handleSourceHover}
                     onMouseLeave={clearIrHighlights}
-                    onCompile={handleCompile}
+                    onCompile={compile}
                 />
             </div>
         </div>

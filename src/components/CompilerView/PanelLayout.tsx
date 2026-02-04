@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { GoldenLayout, ComponentContainer, LayoutConfig } from 'golden-layout';
+import PanelToolbar from './PanelToolbar';
 import SourcePanel from './SourcePanel';
 import IrPanel from './IrPanel';
 import AsmPanel from './AsmPanel';
 import 'golden-layout/dist/css/goldenlayout-base.css';
-// Theme styling for GoldenLayout will be handled via CSS variables in global.css
 
 const registerPanelMount = (
     layout: GoldenLayout,
@@ -35,7 +35,7 @@ const PanelLayout: React.FC = () => {
 
         const config: LayoutConfig = {
             settings: {
-                hasHeaders: false,
+                // hasHeaders: false,
             },
             root: {
                 type: 'row',
@@ -44,23 +44,26 @@ const PanelLayout: React.FC = () => {
                         type: 'component',
                         componentType: 'source',
                         title: 'Source',
-                        width: 40,
+                        width: 25,
                         componentState: {},
+                        isClosable: false,
                     },
                     {
-                        type: 'column',
+                        type: 'row',
                         content: [
                             {
                                 type: 'component',
                                 componentType: 'ir',
                                 title: 'IR',
                                 componentState: {},
+                                isClosable: false,
                             },
                             {
                                 type: 'component',
                                 componentType: 'asm',
                                 title: 'Assembly',
                                 componentState: {},
+                                isClosable: false,
                             },
                         ],
                     },
@@ -96,6 +99,7 @@ const PanelLayout: React.FC = () => {
 
     return (
         <>
+            <PanelToolbar />
             <div ref={containerRef} className="panel-layout-container" />
             <SourcePanel />
             <IrPanel />
