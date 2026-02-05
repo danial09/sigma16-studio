@@ -1,9 +1,11 @@
 import React from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
 import { useCompiler } from '@/contexts/CompilerContext';
 import NavHeader from '../common/NavHeader';
 
 const Settings: React.FC = () => {
-    const { settings, updateSettings, state, updateOptions } = useCompiler();
+    const { settings, updateSettings } = useSettings();
+    const { state, updateOptions } = useCompiler();
 
     return (
         <div className="nav-page">

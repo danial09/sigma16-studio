@@ -1,11 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useCompiler } from '@/contexts/CompilerContext';
 import StatusBar from '../common/StatusBar';
 
 const Header: React.FC = () => {
-    useCompiler();
-
     return (
         <header className="app-header">
             <h1>Sigma16 Studio</h1>

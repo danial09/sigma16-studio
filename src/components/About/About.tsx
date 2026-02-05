@@ -15,9 +15,19 @@ const About: React.FC = () => {
                 </section>
 
                 <section className="nav-section">
+                    <h2>About</h2>
+                    <p>Sigma16 Studio is an educational tool designed to help students learn about computer architecture
+                        and assembly language programming using the Sigma16 architecture.</p>
+                    <p>It provides an interactive environment for visually exploring how high-level code translates to a
+                        flattened intermediate low-level representation and then to assembly language</p>
+                </section>
+
+                <section className="nav-section">
                     <h2>Resources</h2>
                     <p>
-                        <a href="https://github.com/" target="_blank" rel="noopener noreferrer">Project repository</a>
+                        <a href="https://github.com/danial09/sigma16-studio" target="_blank" rel="noopener noreferrer">
+                            GitHub Repository
+                        </a>
                     </p>
                 </section>
             </div>

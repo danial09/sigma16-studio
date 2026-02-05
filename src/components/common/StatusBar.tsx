@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useCompiler } from '@/contexts/CompilerContext';
 
 const StatusBar: React.FC = () => {
     const { state } = useCompiler();
 
-    const getMessage = () => {
+    const message = useMemo(() => {
         if (state.isCompiling) return 'Compiling...';
         if (state.error) return 'Compilation Error';
         if (state.result) {
@@ -13,11 +13,11 @@ const StatusBar: React.FC = () => {
             return `Compiled: ${irCount} IR, ${asmCount} ASM`;
         }
         return 'Ready';
-    };
+    }, [state.isCompiling, state.error, state.result]);
 
     return (
         <div className={`status-bar ${state.error ? 'error' : ''}`}>
-            {getMessage()}
+            {message}
         </div>
     );
 };

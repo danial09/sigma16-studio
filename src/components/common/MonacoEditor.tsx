@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
-import { useCompiler } from '@/contexts/CompilerContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { HighlightRange, LineHighlight } from '@/types/compiler.types';
 
 interface MonacoEditorProps {
@@ -10,7 +10,6 @@ interface MonacoEditorProps {
     theme?: string;
     readOnly?: boolean;
     onCursorChange?: (line: number, column: number) => void;
-    onCompile?: () => void;
     lineHighlights?: LineHighlight[];
     rangeHighlights?: HighlightRange[];
     onMouseMove?: (line: number, column: number) => void;
@@ -22,9 +21,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
     value,
     onChange,
     language,
-    theme,
     readOnly = false,
-    onCursorChange,
     lineHighlights = [],
     rangeHighlights = [],
     onMouseMove,
@@ -34,19 +31,25 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
     const decorationsRef = useRef<string[]>([]);
-    const { settings } = useCompiler();
+    const { settings } = useSettings();
 
-    const editorTheme = React.useMemo(() => {
-        return settings.theme === 'light' ? 'vs' : 'vs-dark';
-    }, [theme, settings.theme]);
+    // Store callbacks in refs so editor doesn't need to be recreated when they change
+    const onChangeRef = useRef(onChange);
+    const onMouseMoveRef = useRef(onMouseMove);
+    const onMouseLeaveRef = useRef(onMouseLeave);
 
+    useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+    useEffect(() => { onMouseMoveRef.current = onMouseMove; }, [onMouseMove]);
+    useEffect(() => { onMouseLeaveRef.current = onMouseLeave; }, [onMouseLeave]);
+
+    // Create editor once, only recreate if language or readOnly changes
     useEffect(() => {
         if (!containerRef.current) return;
 
         const editor = monaco.editor.create(containerRef.current, {
             value,
             language,
-            theme: editorTheme,
+            theme: settings.theme === 'light' ? 'vs' : 'vs-dark',
             readOnly,
             fontSize: settings.fontSize,
             automaticLayout: true,
@@ -58,58 +61,57 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
             lineDecorationsWidth: 0,
             lineNumbersMinChars: 3,
             wordWrap: 'off',
-
-
         });
 
         editorRef.current = editor;
 
         const disposables: monaco.IDisposable[] = [];
 
-        if (onChange) {
-            disposables.push(
-                editor.onDidChangeModelContent(() => {
-                    onChange(editor.getValue());
-                }),
-            );
-        }
+        disposables.push(
+            editor.onDidChangeModelContent(() => {
+                onChangeRef.current?.(editor.getValue());
+            }),
+        );
 
-        if (onCursorChange) {
-            disposables.push(
-                editor.onDidChangeCursorPosition((e) => {
-                    onCursorChange(e.position.lineNumber - 1, e.position.column - 1);
-                }),
-            );
-        }
+        disposables.push(
+            editor.onMouseMove((e) => {
+                const pos = e.target.position;
+                if (!pos) return;
+                onMouseMoveRef.current?.(pos.lineNumber - 1, pos.column - 1);
+            }),
+        );
 
-        if (onMouseMove) {
-            disposables.push(
-                editor.onMouseMove((e) => {
-                    const pos = e.target.position;
-                    if (!pos) return;
-                    onMouseMove(pos.lineNumber - 1, pos.column - 1);
-                }),
-            );
-        }
-
-        if (onMouseLeave) {
-            disposables.push(
-                editor.onMouseLeave(() => {
-                    onMouseLeave();
-                }),
-            );
-        }
+        disposables.push(
+            editor.onMouseLeave(() => {
+                onMouseLeaveRef.current?.();
+            }),
+        );
 
         return () => {
-            disposables.forEach((d) => d.dispose());
+            disposables.forEach(d => d.dispose());
             editor.dispose();
+            editorRef.current = null;
         };
-    }, [language, theme, editorTheme, readOnly, settings.fontSize, onChange, onCursorChange, onMouseMove, onMouseLeave]);
+        // Only recreate editor when language or readOnly changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [language, readOnly]);
 
+    // Update theme without recreating editor
     useEffect(() => {
         if (!editorRef.current) return;
-        const model = editorRef.current.getModel();
-        if (!model) return;
+        const newTheme = settings.theme === 'light' ? 'vs' : 'vs-dark';
+        monaco.editor.setTheme(newTheme);
+    }, [settings.theme]);
+
+    // Update font size without recreating editor
+    useEffect(() => {
+        if (!editorRef.current) return;
+        editorRef.current.updateOptions({ fontSize: settings.fontSize });
+    }, [settings.fontSize]);
+
+    // Update decorations
+    useEffect(() => {
+        if (!editorRef.current) return;
 
         const decorations: monaco.editor.IModelDeltaDecoration[] = [];
 
@@ -151,6 +153,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
         );
     }, [lineHighlights, rangeHighlights]);
 
+    // Sync external value changes
     useEffect(() => {
         if (!editorRef.current) return;
         if (editorRef.current.getValue() !== value) {

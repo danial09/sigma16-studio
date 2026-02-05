@@ -1,92 +1,23 @@
-import React, { useEffect, useCallback, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 import { useCompiler } from '@/contexts/CompilerContext';
-import MonacoEditor from '../common/MonacoEditor';
 import { SIGMA16_IR_LANG_ID } from '@/languages/ir';
 import { buildHighlightsForInstruction } from '@/services/highlighting';
+import OutputPanel from './OutputPanel';
 
 const IrPanel: React.FC = () => {
-    const { state, setSourceHighlights, setIrHighlights, setAsmHighlights } = useCompiler();
-    const [mounted, setMounted] = React.useState(false);
-    const lastInstrRef = useRef<number | null>(null);
+    const { state } = useCompiler();
 
-    useEffect(() => {
-        const checkMount = setInterval(() => {
-            const mountPoint = document.getElementById('ir-panel-mount');
-            if (mountPoint) {
-                setMounted(true);
-                clearInterval(checkMount);
-            }
-        }, 100);
-
-        return () => clearInterval(checkMount);
-    }, []);
-
-    const getIrContent = () => {
-        if (!state.result || !state.result.ir) {
-            return '// No IR generated - compile the source';
-        }
-        return state.result.ir.join('\n');
-    };
-
-    const clearHighlights = useCallback(() => {
-        lastInstrRef.current = null;
-        setSourceHighlights([]);
-        setIrHighlights([]);
-        setAsmHighlights([]);
-    }, [setSourceHighlights, setIrHighlights, setAsmHighlights]);
-
-    const handleIrHover = useCallback((line: number) => {
-        if (!state.mapping || !state.result?.success || !state.result.ir) {
-            if (lastInstrRef.current !== null) {
-                clearHighlights();
-            }
-            return;
-        }
-
-        if (line < 0 || line >= state.result.ir.length) {
-            clearHighlights();
-            return;
-        }
-
-        if (line === lastInstrRef.current) {
-            return;
-        }
-
-        lastInstrRef.current = line;
-        const { sourceRanges, irLines, asmLines } = buildHighlightsForInstruction(line, state.mapping);
-        setSourceHighlights(sourceRanges);
-        setIrHighlights(irLines);
-        setAsmHighlights(asmLines);
-    }, [state.mapping, state.result?.success, state.result?.ir, setSourceHighlights, setIrHighlights, setAsmHighlights, clearHighlights]);
-
-    const content = (
-        <div className="ir-panel">
-            {state.error ? (
-                <div className="error-display">
-                    <div className="error-title">Compilation Error</div>
-                    <div className="error-message">{state.error}</div>
-                </div>
-            ) : (
-                <MonacoEditor
-                    value={getIrContent()}
-                    language={SIGMA16_IR_LANG_ID}
-                    theme="sigma16-ir-dark"
-                    readOnly={true}
-                    lineHighlights={state.irHighlights}
-                    className="ir-viewer"
-                    onMouseMove={handleIrHover}
-                    onMouseLeave={clearHighlights}
-                />
-            )}
-        </div>
-    );
-
-    if (!mounted) return null;
-
-    return ReactDOM.createPortal(
-        content,
-        document.getElementById('ir-panel-mount')!
+    return (
+        <OutputPanel
+            mountId="ir-panel-mount"
+            language={SIGMA16_IR_LANG_ID}
+            theme="sigma16-ir-dark"
+            className="ir-panel"
+            lines={state.result?.ir}
+            lineHighlights={state.irHighlights}
+            emptyMessage="// No IR generated - compile the source"
+            buildHighlights={buildHighlightsForInstruction}
+        />
     );
 };
 

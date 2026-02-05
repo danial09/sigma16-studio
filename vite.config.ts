@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { env } from "node:process";
@@ -10,6 +11,19 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
+    css: true,
+    alias: {
+      "monaco-editor": fileURLToPath(new URL("./src/test/mocks/monaco-editor.ts", import.meta.url)),
+      "s16-wasm": fileURLToPath(new URL("./src/test/mocks/s16-wasm.ts", import.meta.url)),
+      "golden-layout": fileURLToPath(new URL("./src/test/mocks/golden-layout.ts", import.meta.url)),
+    },
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
