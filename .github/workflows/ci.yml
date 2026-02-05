@@ -21,8 +21,17 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Build WASM package
+        run: npm run wasm-build
 
       - name: TypeScript type check
         run: npx tsc --noEmit
@@ -62,8 +71,17 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Build WASM package
+        run: npm run wasm-build
 
       - name: Build
         run: npm run build
