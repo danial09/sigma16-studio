@@ -205,6 +205,30 @@ body {
     flex-direction: column;
 }
 
+/* Error Display */
+.error-display {
+    padding: 20px;
+    height: 100%;
+    overflow: auto;
+    background: var(--bg-secondary);
+}
+
+.error-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--error);
+    margin-bottom: 12px;
+}
+
+.error-message {
+    color: var(--error);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
 /* Highlighting */
 .highlight-stmt {
     background-color: rgba(71, 211, 92, 0.2) !important;

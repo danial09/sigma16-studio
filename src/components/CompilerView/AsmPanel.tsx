@@ -62,16 +62,23 @@ const AsmPanel: React.FC = () => {
 
     const content = (
         <div className="asm-panel">
-            <MonacoEditor
-                value={getAsmContent()}
-                language={SIGMA16_ASM_LANG_ID}
-                theme="sigma16-asm-dark"
-                readOnly={true}
-                lineHighlights={state.asmHighlights}
-                className="asm-viewer"
-                onMouseMove={handleAsmHover}
-                onMouseLeave={clearHighlights}
-            />
+            {state.error ? (
+                <div className="error-display">
+                    <div className="error-title">Compilation Error</div>
+                    <div className="error-message">{state.error}</div>
+                </div>
+            ) : (
+                <MonacoEditor
+                    value={getAsmContent()}
+                    language={SIGMA16_ASM_LANG_ID}
+                    theme="sigma16-asm-dark"
+                    readOnly={true}
+                    lineHighlights={state.asmHighlights}
+                    className="asm-viewer"
+                    onMouseMove={handleAsmHover}
+                    onMouseLeave={clearHighlights}
+                />
+            )}
         </div>
     );
 

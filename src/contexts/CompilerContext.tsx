@@ -157,7 +157,15 @@ export function CompilerProvider({ children }: { children: ReactNode }) {
         try {
             const result = await compileSource(state.source, state.options);
             dispatch({ type: 'SET_RESULT', payload: result });
-            dispatch({ type: 'SET_MAPPING', payload: buildMappingSnapshot(result) });
+
+            // Check if compilation was successful
+            if (!result.success && result.error) {
+                dispatch({ type: 'SET_ERROR', payload: result.error });
+                dispatch({ type: 'SET_MAPPING', payload: null });
+            } else {
+                dispatch({ type: 'SET_MAPPING', payload: buildMappingSnapshot(result) });
+            }
+
             dispatch({ type: 'SET_SOURCE_HIGHLIGHTS', payload: [] });
             dispatch({ type: 'SET_IR_HIGHLIGHTS', payload: [] });
             dispatch({ type: 'SET_ASM_HIGHLIGHTS', payload: [] });

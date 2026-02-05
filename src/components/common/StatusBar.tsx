@@ -6,8 +6,8 @@ const StatusBar: React.FC = () => {
 
     const getMessage = () => {
         if (state.isCompiling) return 'Compiling...';
-        if (state.error) return `Error: ${state.error}`;
-        if (state.result && state.result.success) {
+        if (state.error) return 'Compilation Error';
+        if (state.result) {
             const irCount = state.result.ir?.length || 0;
             const asmCount = state.result.asm?.length || 0;
             return `Compiled: ${irCount} IR, ${asmCount} ASM`;

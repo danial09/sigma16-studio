@@ -62,16 +62,23 @@ const IrPanel: React.FC = () => {
 
     const content = (
         <div className="ir-panel">
-            <MonacoEditor
-                value={getIrContent()}
-                language={SIGMA16_IR_LANG_ID}
-                theme="sigma16-ir-dark"
-                readOnly={true}
-                lineHighlights={state.irHighlights}
-                className="ir-viewer"
-                onMouseMove={handleIrHover}
-                onMouseLeave={clearHighlights}
-            />
+            {state.error ? (
+                <div className="error-display">
+                    <div className="error-title">Compilation Error</div>
+                    <div className="error-message">{state.error}</div>
+                </div>
+            ) : (
+                <MonacoEditor
+                    value={getIrContent()}
+                    language={SIGMA16_IR_LANG_ID}
+                    theme="sigma16-ir-dark"
+                    readOnly={true}
+                    lineHighlights={state.irHighlights}
+                    className="ir-viewer"
+                    onMouseMove={handleIrHover}
+                    onMouseLeave={clearHighlights}
+                />
+            )}
         </div>
     );
 
