@@ -40,7 +40,7 @@ describe('pickAstIdForPosition', () => {
 describe('collectIrHighlightsForAst', () => {
     it('returns IR and ASM highlights for an AST node', () => {
         const snapshot = makeSnapshot();
-        const { irLines, asmLines } = collectIrHighlightsForAst(1, snapshot);
+        const { irLines } = collectIrHighlightsForAst(1, snapshot);
 
         expect(irLines.length).toBeGreaterThan(0);
         expect(irLines[0].type).toBe('statement');

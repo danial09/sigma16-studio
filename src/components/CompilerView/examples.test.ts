@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { examples, exampleCategories, ExampleCode } from '@/components/CompilerView/examples';
+import { examples, exampleCategories } from '@/components/CompilerView/examples';
 
 describe('examples data', () => {
     it('examples object is not empty', () => {
@@ -8,7 +8,7 @@ describe('examples data', () => {
     });
 
     it('all example values are non-empty strings', () => {
-        for (const [key, value] of Object.entries(examples)) {
+        for (const [, value] of Object.entries(examples)) {
             expect(typeof value).toBe('string');
             expect(value.trim().length).toBeGreaterThan(0);
         }

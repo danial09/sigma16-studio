@@ -10,7 +10,7 @@ import {
     dominantBlockComponent,
     collectBlockInstrIndices,
 } from '@/services/highlighting/mappings';
-import { makeSnapshot, makeCompilationResult } from '@/test/fixtures';
+import { makeSnapshot } from '@/test/fixtures';
 
 describe('buildLineHighlights', () => {
     it('marks statement lines as statement type', () => {
