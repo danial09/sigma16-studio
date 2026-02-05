@@ -446,7 +446,3 @@ export const exampleCategories: ExampleCategory[] = [
   },
 ];
 
-// Legacy flat list for backward compatibility
-export const examplesList = exampleCategories.flatMap((category) =>
-  category.examples
-);

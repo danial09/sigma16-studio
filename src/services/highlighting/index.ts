@@ -1,7 +1,7 @@
+export { buildMappingSnapshot } from './snapshot';
 export {
-    buildMappingSnapshot,
     pickAstIdForPosition,
     collectIrHighlightsForAst,
     buildHighlightsForInstruction,
     buildHighlightsForAsmLine,
-} from './highlighting/index';
+} from './highlights';
