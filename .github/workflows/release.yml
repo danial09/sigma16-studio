@@ -66,8 +66,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__
-          releaseName: "Sigma16 Studio v__VERSION__"
+          tagName: app-v1.0.0
+          releaseName: "Sigma16 Studio v1.0.0"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
