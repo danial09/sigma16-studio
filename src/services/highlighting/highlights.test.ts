@@ -38,8 +38,9 @@ describe('pickAstIdForPosition', () => {
 });
 
 describe('collectIrHighlightsForAst', () => {
-    it('returns IR and ASM highlights for an AST node', () => {
+    it('returns IR and ASM highlights for an AST node without component', () => {
         const snapshot = makeSnapshot();
+        // AST 1 (Assign x=5) has no component → 'statement'
         const { irLines } = collectIrHighlightsForAst(1, snapshot);
 
         expect(irLines.length).toBeGreaterThan(0);
@@ -49,6 +50,14 @@ describe('collectIrHighlightsForAst', () => {
         const irLineNums = irLines.map(h => h.line);
         expect(irLineNums).toContain(0);
         expect(irLineNums).toContain(1);
+    });
+
+    it('uses component type for AST nodes with a component', () => {
+        const snapshot = makeSnapshot();
+        // AST 4 (Binary x < y) has component 'Condition'
+        const { irLines } = collectIrHighlightsForAst(4, snapshot);
+        const condLines = irLines.filter(h => h.type === 'condition');
+        expect(condLines.length).toBeGreaterThan(0);
     });
 
     it('returns empty for AST with no IR instructions', () => {
@@ -64,6 +73,15 @@ describe('collectIrHighlightsForAst', () => {
         const asmLineNums = asmLines.map(h => h.line);
         expect(asmLineNums).toContain(0);
         expect(asmLineNums).toContain(1);
+    });
+
+    it('includes context component highlights for control structure parts', () => {
+        const snapshot = makeSnapshot();
+        // AST 5 (Assign z = x + y) has component 'ThenBranch', inside If (AST 3)
+        const { irLines } = collectIrHighlightsForAst(5, snapshot);
+        const types = new Set(irLines.map(h => h.type));
+        // Should include at least the then-branch type for the statement + some context types
+        expect(types.has('then-branch')).toBe(true);
     });
 });
 
@@ -86,8 +104,9 @@ describe('buildHighlightsForInstruction', () => {
     it('source ranges have correct type', () => {
         const snapshot = makeSnapshot();
         const result = buildHighlightsForInstruction(0, snapshot);
+        const validTypes = ['statement', 'block', 'condition', 'then-branch', 'else-branch', 'loop-body', 'control-glue'];
         for (const range of result.sourceRanges) {
-            expect(['statement', 'block']).toContain(range.type);
+            expect(validTypes).toContain(range.type);
         }
     });
 });

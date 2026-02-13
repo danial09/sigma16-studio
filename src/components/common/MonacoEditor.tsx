@@ -1,7 +1,37 @@
 import React, { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 import { useSettings } from '@/contexts/SettingsContext';
-import { HighlightRange, LineHighlight } from '@/types/compiler.types';
+import { HighlightRange, HighlightType, LineHighlight } from '@/types/compiler.types';
+
+const HIGHLIGHT_CLASS: Record<HighlightType, string> = {
+    'statement': 'highlight-stmt',
+    'block': 'highlight-block',
+    'condition': 'highlight-condition',
+    'then-branch': 'highlight-then',
+    'else-branch': 'highlight-else',
+    'loop-body': 'highlight-loop',
+    'control-glue': 'highlight-glue',
+};
+
+const HIGHLIGHT_RULER_COLOR: Record<HighlightType, string> = {
+    'statement': '#47d35c',
+    'block': '#4ea3ff',
+    'condition': '#ffb74d',
+    'then-branch': '#4ea3ff',
+    'else-branch': '#ce93ff',
+    'loop-body': '#4dd0e1',
+    'control-glue': '#9e9e9e',
+};
+
+const INLINE_HIGHLIGHT_CLASS: Record<HighlightType, string> = {
+    'statement': 'inline-highlight-stmt',
+    'block': 'inline-highlight-block',
+    'condition': 'inline-highlight-condition',
+    'then-branch': 'inline-highlight-then',
+    'else-branch': 'inline-highlight-else',
+    'loop-body': 'inline-highlight-loop',
+    'control-glue': 'inline-highlight-glue',
+};
 
 interface MonacoEditorProps {
     value: string;
@@ -120,9 +150,9 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
                 range: new monaco.Range(highlight.line + 1, 1, highlight.line + 1, 1),
                 options: {
                     isWholeLine: true,
-                    className: highlight.type === 'statement' ? 'highlight-stmt' : 'highlight-block',
+                    className: HIGHLIGHT_CLASS[highlight.type] ?? 'highlight-stmt',
                     overviewRuler: {
-                        color: highlight.type === 'statement' ? '#47d35c' : '#4ea3ff',
+                        color: HIGHLIGHT_RULER_COLOR[highlight.type] ?? '#47d35c',
                         position: monaco.editor.OverviewRulerLane.Full,
                     },
                 },
@@ -130,6 +160,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
         }
 
         for (const rangeHighlight of rangeHighlights) {
+            const inlineCls = INLINE_HIGHLIGHT_CLASS[rangeHighlight.type] ?? 'inline-highlight-stmt';
             decorations.push({
                 range: new monaco.Range(
                     rangeHighlight.startLine + 1,
@@ -138,11 +169,8 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
                     rangeHighlight.endCol + 1,
                 ),
                 options: {
-                    className: rangeHighlight.type === 'statement' ? 'inline-highlight-stmt' : 'inline-highlight-block',
-                    inlineClassName:
-                        rangeHighlight.type === 'statement'
-                            ? 'inline-highlight-stmt'
-                            : 'inline-highlight-block',
+                    className: inlineCls,
+                    inlineClassName: inlineCls,
                 },
             });
         }

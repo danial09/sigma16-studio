@@ -3,19 +3,23 @@ import * as monaco from 'monaco-editor';
 export const SIGMA16_ASM_LANG_ID = 'sigma16-asm';
 
 export const sigma16AsmLanguage: monaco.languages.IMonarchLanguage = {
-  keywords: ['lea', 'jump', 'load', 'store', 'add', 'sub', 'mul', 'cmp', 
-             'jge', 'jle', 'jg', 'jne', 'data'],
+  keywords: ['lea', 'jump', 'load', 'store', 'add', 'sub', 'mul', 'div', 'cmp', 
+             'jumpge', 'jumple', 'jumpgt', 'jumplt', 'jumpeq', 'jumpne', 'jal', 
+             'trap', 'data'],
   
   registers: ['R0', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 
                'R8', 'R9', 'R10', 'R11', 'R12', 'R13', 'R14', 'R15'],
   
   tokenizer: {
     root: [
+      // Comments
+      [/;.*$/, 'comment'],
+
       // Labels
       [/^[a-zA-Z_][a-zA-Z0-9_]*/, 'label'],
       
       // Instructions
-      [/\b(lea|jump|load|store|add|sub|mul|cmp|jge|jle|jg|jne|data)\b/, 'keyword'],
+      [/\b(lea|jump|load|store|add|sub|mul|div|cmp|jumpge|jumple|jumpgt|jumplt|jumpeq|jumpne|jal|trap|data)\b/, 'keyword'],
       
       // Registers
       [/\bR\d{1,2}\b/, 'register'],

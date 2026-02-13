@@ -1,15 +1,14 @@
 import { CompilerMappingSnapshot, HighlightRange, LineHighlight } from '@/types/compiler.types';
-import { PREFERRED_KINDS, containsPosition, spanLength } from './helpers';
+import { PREFERRED_KINDS, containsPosition, resolveStmtHighlightType, spanLength } from './helpers';
 import {
     instrsForAst,
-    collectBlockInstrIndices,
+    collectComponentInstrSets,
     buildLineHighlights,
     buildAsmLineHighlights,
     getAstIdsForInstruction,
     pickPrimaryAst,
     astIdsWithSameSpan,
-    dominantBlockComponent,
-    collectBlockAstIds,
+    collectComponentAstIds,
     convertAstIdsToRanges,
     hasIrForAst,
 } from './mappings';
@@ -37,10 +36,11 @@ export function collectIrHighlightsForAst(
     const stmtSet = new Set(instrsForAst(astId, snapshot));
     if (stmtSet.size === 0) return { irLines: [], asmLines: [] };
 
-    const blockSet = collectBlockInstrIndices(astId, stmtSet, snapshot);
+    const stmtType = resolveStmtHighlightType(stmtSet, snapshot);
+    const componentSets = collectComponentInstrSets(astId, stmtSet, snapshot);
     return {
-        irLines: buildLineHighlights(stmtSet, blockSet),
-        asmLines: buildAsmLineHighlights(stmtSet, blockSet, snapshot),
+        irLines: buildLineHighlights(stmtSet, stmtType, componentSets),
+        asmLines: buildAsmLineHighlights(stmtSet, stmtType, componentSets, snapshot),
     };
 }
 
@@ -56,17 +56,20 @@ export function buildHighlightsForInstruction(
 
     const stmtIds = astIdsWithSameSpan(primary, snapshot);
     const stmtInstrs = new Set(instrsForAst(primary, snapshot));
-    const blockInstrs = collectBlockInstrIndices(primary, stmtInstrs, snapshot);
-    const irLines = buildLineHighlights(stmtInstrs, blockInstrs);
-    const asmLines = buildAsmLineHighlights(stmtInstrs, blockInstrs, snapshot);
+    const stmtType = resolveStmtHighlightType(stmtInstrs, snapshot);
+    const componentSets = collectComponentInstrSets(primary, stmtInstrs, snapshot);
+    const irLines = buildLineHighlights(stmtInstrs, stmtType, componentSets);
+    const asmLines = buildAsmLineHighlights(stmtInstrs, stmtType, componentSets, snapshot);
 
-    const domComp = dominantBlockComponent(stmtInstrs, snapshot);
-    const blockIds = collectBlockAstIds(primary, stmtIds, domComp, snapshot);
+    const componentAstIds = collectComponentAstIds(primary, stmtIds, snapshot);
 
-    const sourceRanges = [
-        ...convertAstIdsToRanges(stmtIds, 'statement', snapshot),
-        ...convertAstIdsToRanges(blockIds, 'block', snapshot),
+    const sourceRanges: HighlightRange[] = [
+        ...convertAstIdsToRanges(stmtIds, stmtType, snapshot),
     ];
+
+    for (const [type, ids] of componentAstIds) {
+        sourceRanges.push(...convertAstIdsToRanges(ids, type, snapshot));
+    }
 
     return { sourceRanges, irLines, asmLines };
 }
