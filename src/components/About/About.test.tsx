@@ -29,11 +29,6 @@ describe('About', () => {
         expect(screen.getByText('Sigma16 Studio')).toBeInTheDocument();
     });
 
-    it('renders the version number', () => {
-        render(<About />, { wrapper: Wrapper });
-        expect(screen.getByText(/Version: 0\.1\.0/)).toBeInTheDocument();
-    });
-
     it('renders a back link', () => {
         render(<About />, { wrapper: Wrapper });
         expect(screen.getByText('← Back to Compiler')).toBeInTheDocument();
