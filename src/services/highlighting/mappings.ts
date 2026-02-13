@@ -1,46 +1,59 @@
-import { AstSpan, CompilerMappingSnapshot, HighlightRange, LineHighlight } from '@/types/compiler.types';
-import { BLOCK_COMPONENTS, CONTROL_KINDS, normalizeComponentName, spanLength } from './helpers';
+import { AstSpan, CompilerMappingSnapshot, HighlightRange, HighlightType, LineHighlight } from '@/types/compiler.types';
+import { ALL_COMPONENTS, BLOCK_COMPONENTS, CONTROL_KINDS, componentToHighlightType, normalizeComponentName, spanLength } from './helpers';
 
 export function buildLineHighlights(
     stmtSet: Set<number>,
-    blockSet: Set<number>,
+    stmtType: HighlightType,
+    componentSets: Map<HighlightType, Set<number>>,
 ): LineHighlight[] {
-    const highlights: LineHighlight[] = [];
+    const lineTypes = new Map<number, HighlightType>();
 
-    for (const line of Array.from(stmtSet).sort((a, b) => a - b)) {
-        highlights.push({ line, type: 'statement' });
-        blockSet.delete(line);
+    // Component lines first (lower priority)
+    for (const [type, indices] of componentSets) {
+        for (const line of indices) {
+            if (!stmtSet.has(line)) {
+                lineTypes.set(line, type);
+            }
+        }
     }
 
-    for (const line of Array.from(blockSet).sort((a, b) => a - b)) {
-        highlights.push({ line, type: 'block' });
+    // Statement lines always take priority, using their resolved type
+    for (const line of stmtSet) {
+        lineTypes.set(line, stmtType);
     }
 
-    return highlights;
+    return Array.from(lineTypes.entries())
+        .sort((a, b) => a[0] - b[0])
+        .map(([line, type]) => ({ line, type }));
 }
 
 export function buildAsmLineHighlights(
     stmtSet: Set<number>,
-    blockSet: Set<number>,
+    stmtType: HighlightType,
+    componentSets: Map<HighlightType, Set<number>>,
     snapshot: CompilerMappingSnapshot,
 ): LineHighlight[] {
     if (!snapshot.irToAsm.size) return [];
 
-    const lineKinds = new Map<number, LineHighlight['type']>();
+    const lineKinds = new Map<number, HighlightType>();
 
-    for (const idx of blockSet) {
-        const asmLines = snapshot.irToAsm.get(idx);
-        if (!asmLines) continue;
-        for (const line of asmLines) {
-            if (!lineKinds.has(line)) lineKinds.set(line, 'block');
+    // Component lines first (lower priority)
+    for (const [type, indices] of componentSets) {
+        for (const idx of indices) {
+            const asmLines = snapshot.irToAsm.get(idx);
+            if (!asmLines) continue;
+            for (const line of asmLines) {
+                if (!lineKinds.has(line)) lineKinds.set(line, type);
+            }
         }
     }
 
+    // Statement lines overwrite (higher priority), using their resolved type
     for (const idx of stmtSet) {
         const asmLines = snapshot.irToAsm.get(idx);
         if (!asmLines) continue;
         for (const line of asmLines) {
-            lineKinds.set(line, 'statement');
+            lineKinds.set(line, stmtType);
         }
     }
 
@@ -51,7 +64,7 @@ export function buildAsmLineHighlights(
 
 export function convertAstIdsToRanges(
     ids: Iterable<number>,
-    type: 'statement' | 'block',
+    type: HighlightType,
     snapshot: CompilerMappingSnapshot,
 ): HighlightRange[] {
     const ranges: HighlightRange[] = [];
@@ -188,6 +201,42 @@ export function collectBlockInstrIndices(
     return blockSet;
 }
 
+export function collectComponentInstrSets(
+    astId: number,
+    stmtSet: Set<number>,
+    snapshot: CompilerMappingSnapshot,
+): Map<HighlightType, Set<number>> {
+    const result = new Map<HighlightType, Set<number>>();
+
+    const span = snapshot.spanById.get(astId);
+    if (!span) return result;
+
+    const ctrl = findInnermostControlContaining(span.start_byte, span.end_byte, snapshot);
+    if (!ctrl) return result;
+
+    for (let i = 0; i < snapshot.totalInstructions; i++) {
+        if (stmtSet.has(i)) continue;
+        const maps = snapshot.instrToMaps.get(i);
+        if (!maps) continue;
+        for (const mapping of maps) {
+            const component = normalizeComponentName(mapping.component);
+            if (!component || !ALL_COMPONENTS.has(component)) continue;
+            const hlType = componentToHighlightType(component);
+            if (!hlType) continue;
+            const mappedSpan = snapshot.spanById.get(mapping.ast_node_id);
+            if (!mappedSpan) continue;
+            if (mappedSpan.start_byte >= ctrl.start_byte && mappedSpan.end_byte <= ctrl.end_byte) {
+                let set = result.get(hlType);
+                if (!set) { set = new Set(); result.set(hlType, set); }
+                set.add(i);
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
 export function collectBlockAstIds(
     primaryId: number,
     stmtIds: Set<number>,
@@ -214,6 +263,40 @@ export function collectBlockAstIds(
             !stmtIds.has(mapping.ast_node_id)
         ) {
             result.add(mapping.ast_node_id);
+        }
+    }
+
+    return result;
+}
+
+export function collectComponentAstIds(
+    primaryId: number,
+    stmtIds: Set<number>,
+    snapshot: CompilerMappingSnapshot,
+): Map<HighlightType, Set<number>> {
+    const result = new Map<HighlightType, Set<number>>();
+
+    const primarySpan = snapshot.spanById.get(primaryId);
+    if (!primarySpan) return result;
+
+    const ctrl = findInnermostControlContaining(primarySpan.start_byte, primarySpan.end_byte, snapshot);
+    if (!ctrl) return result;
+
+    for (const mapping of snapshot.instrMappings) {
+        const component = normalizeComponentName(mapping.component);
+        if (!component || !ALL_COMPONENTS.has(component)) continue;
+        const hlType = componentToHighlightType(component);
+        if (!hlType) continue;
+        const span = snapshot.spanById.get(mapping.ast_node_id);
+        if (!span) continue;
+        if (
+            span.start_byte >= ctrl.start_byte &&
+            span.end_byte <= ctrl.end_byte &&
+            !stmtIds.has(mapping.ast_node_id)
+        ) {
+            let set = result.get(hlType);
+            if (!set) { set = new Set(); result.set(hlType, set); }
+            set.add(mapping.ast_node_id);
         }
     }
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { containsPosition, spanLength, normalizeComponentName, PREFERRED_KINDS, CONTROL_KINDS, BLOCK_COMPONENTS } from '@/services/highlighting/helpers';
-import { makeSpan } from '@/test/fixtures';
+import { containsPosition, spanLength, normalizeComponentName, componentToHighlightType, resolveStmtHighlightType, PREFERRED_KINDS, CONTROL_KINDS, BLOCK_COMPONENTS, ALL_COMPONENTS } from '@/services/highlighting/helpers';
+import { makeSpan, makeSnapshot } from '@/test/fixtures';
 
 describe('containsPosition', () => {
     const span = makeSpan({
@@ -126,5 +126,62 @@ describe('constants', () => {
         expect(BLOCK_COMPONENTS.has('ElseBranch')).toBe(true);
         expect(BLOCK_COMPONENTS.has('LoopBody')).toBe(true);
         expect(BLOCK_COMPONENTS.has('Condition')).toBe(false);
+    });
+
+    it('ALL_COMPONENTS contains all component types', () => {
+        expect(ALL_COMPONENTS.has('Condition')).toBe(true);
+        expect(ALL_COMPONENTS.has('ThenBranch')).toBe(true);
+        expect(ALL_COMPONENTS.has('ElseBranch')).toBe(true);
+        expect(ALL_COMPONENTS.has('LoopBody')).toBe(true);
+        expect(ALL_COMPONENTS.has('ControlFlowGlue')).toBe(true);
+    });
+});
+
+describe('componentToHighlightType', () => {
+    it('maps known components to highlight types', () => {
+        expect(componentToHighlightType('Condition')).toBe('condition');
+        expect(componentToHighlightType('ThenBranch')).toBe('then-branch');
+        expect(componentToHighlightType('ElseBranch')).toBe('else-branch');
+        expect(componentToHighlightType('LoopBody')).toBe('loop-body');
+        expect(componentToHighlightType('ControlFlowGlue')).toBe('control-glue');
+    });
+
+    it('returns null for unknown components', () => {
+        expect(componentToHighlightType('Unknown')).toBeNull();
+    });
+
+    it('returns null for null input', () => {
+        expect(componentToHighlightType(null)).toBeNull();
+    });
+});
+
+describe('resolveStmtHighlightType', () => {
+    it('returns statement for instructions with no component', () => {
+        const snapshot = makeSnapshot();
+        // Instructions 0, 1 (AST 1 Assign x=5) have no component
+        expect(resolveStmtHighlightType(new Set([0, 1]), snapshot)).toBe('statement');
+    });
+
+    it('returns condition for Condition-tagged instructions', () => {
+        const snapshot = makeSnapshot();
+        // Instruction 4 has component 'Condition'
+        expect(resolveStmtHighlightType(new Set([4]), snapshot)).toBe('condition');
+    });
+
+    it('returns then-branch for ThenBranch-tagged instructions', () => {
+        const snapshot = makeSnapshot();
+        // Instructions 7, 8 have component 'ThenBranch'
+        expect(resolveStmtHighlightType(new Set([7, 8]), snapshot)).toBe('then-branch');
+    });
+
+    it('returns control-glue for ControlFlowGlue-tagged instructions', () => {
+        const snapshot = makeSnapshot();
+        // Instructions 5, 6 have component 'ControlFlowGlue'
+        expect(resolveStmtHighlightType(new Set([5, 6]), snapshot)).toBe('control-glue');
+    });
+
+    it('returns statement for empty set', () => {
+        const snapshot = makeSnapshot();
+        expect(resolveStmtHighlightType(new Set(), snapshot)).toBe('statement');
     });
 });

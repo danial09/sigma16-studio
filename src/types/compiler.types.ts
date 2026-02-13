@@ -49,17 +49,26 @@ export interface CompilationResult {
   by_component?: ComponentGroup[];
 }
 
+export type HighlightType =
+  | 'statement'
+  | 'block'
+  | 'condition'
+  | 'then-branch'
+  | 'else-branch'
+  | 'loop-body'
+  | 'control-glue';
+
 export interface HighlightRange {
   startLine: number;
   startCol: number;
   endLine: number;
   endCol: number;
-  type: 'statement' | 'block';
+  type: HighlightType;
 }
 
 export interface LineHighlight {
   line: number;
-  type: 'statement' | 'block';
+  type: HighlightType;
 }
 
 export interface CompilerMappingSnapshot {

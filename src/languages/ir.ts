@@ -3,7 +3,7 @@ import * as monaco from 'monaco-editor';
 export const SIGMA16_IR_LANG_ID = 'sigma16-ir';
 
 export const sigma16IrLanguage: monaco.languages.IMonarchLanguage = {
-  keywords: ['GOTO', 'if'],
+  keywords: ['GOTO', 'if', 'ARRAY', 'FUNC', 'CALL', 'RETURN'],
   
   operators: ['=', '+', '-', '*', '/', '<', '>', '<=', '>=', ':'],
   
@@ -13,7 +13,7 @@ export const sigma16IrLanguage: monaco.languages.IMonarchLanguage = {
       [/^L\d+:/, 'label'],
       
       // Keywords
-      [/\b(GOTO|if)\b/, 'keyword'],
+      [/\b(GOTO|if|ARRAY|FUNC|CALL|RETURN)\b/, 'keyword'],
       
       // Temp variables
       [/__t\d+/, 'variable.temp'],

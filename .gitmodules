@@ -1,4 +1,4 @@
 [submodule "lib/sigma16-compiler"]
 	path = lib/sigma16-compiler
 	url = git@github.com:danial09/sigma16-compiler.git
-	tag = 0.4.1
+	tag = 0.5.0

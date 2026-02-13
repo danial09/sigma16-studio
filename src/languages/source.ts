@@ -3,7 +3,7 @@ import * as monaco from 'monaco-editor';
 export const SIGMA16_SOURCE_LANG_ID = 'sigma16-source';
 
 export const sigma16SourceLanguage: monaco.languages.IMonarchLanguage = {
-  keywords: ['if', 'else', 'while', 'for', 'from', 'to'],
+  keywords: ['if', 'else', 'while', 'for', 'from', 'to', 'array'],
   
   operators: ['=', '+', '-', '*', '/', '<', '>', '<=', '>='],
   
@@ -13,7 +13,7 @@ export const sigma16SourceLanguage: monaco.languages.IMonarchLanguage = {
       [/\/\/.*$/, 'comment'],
       
       // Keywords
-      [/\b(if|else|while|for|from|to)\b/, 'keyword'],
+      [/\b(if|else|while|for|from|to|array)\b/, 'keyword'],
       
       // Numbers
       [/\b\d+\b/, 'number'],

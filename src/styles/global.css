@@ -11,6 +11,11 @@
     --error: #ff6b6b;
     --highlight-stmt: #47d35c;
     --highlight-block: #4ea3ff;
+    --highlight-condition: #ffb74d;
+    --highlight-then: #4ea3ff;
+    --highlight-else: #ce93ff;
+    --highlight-loop: #4dd0e1;
+    --highlight-glue: #9e9e9e;
 }
 
 * {
@@ -239,6 +244,30 @@ body {
     background-color: rgba(78, 163, 255, 0.15) !important;
 }
 
+.highlight-condition {
+    background-color: rgba(255, 183, 77, 0.2) !important;
+    font-weight: bold;
+}
+
+.highlight-then {
+    background-color: rgba(78, 163, 255, 0.2) !important;
+    font-weight: bold;
+}
+
+.highlight-else {
+    background-color: rgba(206, 147, 255, 0.2) !important;
+    font-weight: bold;
+}
+
+.highlight-loop {
+    background-color: rgba(77, 208, 225, 0.2) !important;
+    font-weight: bold;
+}
+
+.highlight-glue {
+    background-color: rgba(158, 158, 158, 0.12) !important;
+}
+
 .inline-highlight-stmt {
     background-color: rgba(71, 211, 92, 0.25);
     border-radius: 2px;
@@ -247,6 +276,31 @@ body {
 
 .inline-highlight-block {
     background-color: rgba(78, 163, 255, 0.2);
+    border-radius: 2px;
+}
+
+.inline-highlight-condition {
+    background-color: rgba(255, 183, 77, 0.25);
+    border-radius: 2px;
+}
+
+.inline-highlight-then {
+    background-color: rgba(78, 163, 255, 0.2);
+    border-radius: 2px;
+}
+
+.inline-highlight-else {
+    background-color: rgba(206, 147, 255, 0.2);
+    border-radius: 2px;
+}
+
+.inline-highlight-loop {
+    background-color: rgba(77, 208, 225, 0.2);
+    border-radius: 2px;
+}
+
+.inline-highlight-glue {
+    background-color: rgba(158, 158, 158, 0.15);
     border-radius: 2px;
 }
 
@@ -488,6 +542,11 @@ body {
     --error: #dc2626;
     --highlight-stmt: #16a34a;
     --highlight-block: #2563eb;
+    --highlight-condition: #d97706;
+    --highlight-then: #2563eb;
+    --highlight-else: #9333ea;
+    --highlight-loop: #0891b2;
+    --highlight-glue: #6b7280;
 }
 
 /* Ensure a dark helper class exists if needed */
