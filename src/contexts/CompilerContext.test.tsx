@@ -20,7 +20,7 @@ describe('CompilerContext', () => {
 
     it('provides initial state with default source', () => {
         const { result } = renderHook(() => useCompiler(), { wrapper });
-        expect(result.current.state.source).toContain('x = 5');
+        expect(result.current.state.source).toBe('// Type your code here');
         expect(result.current.state.isCompiling).toBe(false);
         expect(result.current.state.result).toBeNull();
         expect(result.current.state.error).toBeNull();
@@ -29,7 +29,7 @@ describe('CompilerContext', () => {
     it('provides default compiler options', () => {
         const { result } = renderHook(() => useCompiler(), { wrapper });
         expect(result.current.state.options.emitAsm).toBe(true);
-        expect(result.current.state.options.allocator).toBe('basic');
+        expect(result.current.state.options.allocator).toBe('advanced');
     });
 
     it('updateSource updates the source code', () => {

@@ -52,12 +52,6 @@ describe('Settings', () => {
         expect(emitAsmCheckbox.checked).toBe(true);
     });
 
-    it('renders allocator selector with basic as default', () => {
-        render(<Settings />, { wrapper: Wrapper });
-        const allocatorSelect = screen.getByLabelText('Register Allocator:') as HTMLSelectElement;
-        expect(allocatorSelect.value).toBe('basic');
-    });
-
     it('changes theme when selecting light', async () => {
         const user = userEvent.setup();
         render(<Settings />, { wrapper: Wrapper });
@@ -66,18 +60,6 @@ describe('Settings', () => {
         await user.selectOptions(themeSelect, 'light');
 
         expect((themeSelect as HTMLSelectElement).value).toBe('light');
-    });
-
-    it('shows warning when advanced allocator is selected', async () => {
-        const user = userEvent.setup();
-        render(<Settings />, { wrapper: Wrapper });
-        const allocatorSelect = screen.getByLabelText('Register Allocator:');
-
-        await user.selectOptions(allocatorSelect, 'advanced');
-
-        const alert = screen.getByRole('alert');
-        expect(alert).toBeInTheDocument();
-        expect(alert.textContent).toMatch(/buggy/i);
     });
 
     it('renders back link to compiler', () => {

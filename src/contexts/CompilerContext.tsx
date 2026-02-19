@@ -4,27 +4,11 @@ import { compileSource } from '@/services/compiler';
 import { buildMappingSnapshot } from '@/services/highlighting';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
-const DEFAULT_SOURCE = `x = 5;
-y = 10;
-if x < y {
-  z = x + y;
-} else {
-  z = x - y;
-}
-
-while z > 0 {
-  z = z - 1;
-  w = z * x + 2;
-}
-result = z + 100;
-
-for i from 1 to 10 {
-  result = result + i;
-}`;
+const DEFAULT_SOURCE = '// Type your code here'
 
 const DEFAULT_OPTIONS: CompilerOptions = {
     emitAsm: true,
-    allocator: 'basic',
+    allocator: 'advanced',
 };
 
 interface CompilerContextType {

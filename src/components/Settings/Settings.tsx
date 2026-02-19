@@ -62,17 +62,8 @@ const Settings: React.FC = () => {
                             onChange={(e) => updateOptions({ allocator: e.target.value as 'basic' | 'advanced' })}
                         >
                             <option value="basic">Basic</option>
-                            <option value="advanced">Advanced (BUGGY)</option>
+                            <option value="advanced">Advanced</option>
                         </select>
-                        {state.options.allocator === 'advanced' && (
-                            <div
-                                className="setting-warning"
-                                role="alert"
-                            >
-                                Warning: The advanced register allocator is known to be buggy and may produce incorrect
-                                output. Use at your own risk.
-                            </div>
-                        )}
                     </div>
                 </section>
             </div>
