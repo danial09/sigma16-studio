@@ -1,6 +1,6 @@
 [package]
 name = "sigma16-studio"
-version = "1.1.0"
+version = "1.2.0"
 description = "A Tauri App"
 authors = ["Danial Tariq <danial09.dt@gmail.com>"]
 edition = "2021"
