@@ -19,33 +19,22 @@ c = 4;
 // Multiplication before addition
 result1 = a + b * c;  // Result: 14 (not 20)
 
-// Use variables to control order
-temp = a + b;
-result2 = temp * c;   // Result: 20`,
-
-  'arithmetic-accumulator': `// Accumulator pattern - common in assembly
-total = 0;
-value = 5;
-
-// Accumulate values
-total = total + value;
-total = total + 10;
-total = total + 15;
-
-// Final total: 30`,
+// Use parentheses to control order
+result3 = (a + b) * c; // Result: 20`,
 
   // ===== CONTROL FLOW =====
   'control-if-basic': `// Basic if statement
 age = 18;
+status = 0;  // 0 = Minor, 1 = Adult
 
 if age >= 18 {
     status = 1;  // Adult
 }`,
 
   'control-if-else': `// If-else for binary decisions
-temperature = 75;
+temperature = 35;
 
-if temperature > 70 {
+if temperature > 30 {
     comfort = 1;  // Too hot
 } else {
     comfort = 0;  // Comfortable
@@ -68,16 +57,6 @@ if score >= 90 {
     }
 }`,
 
-  'control-comparison': `// Comparison operators
-x = 10;
-y = 20;
-
-// Different comparisons
-less = x < y;      // 1 (true)
-greater = x > y;   // 0 (false)
-equal = x == y;    // 0 (false)
-not_equal = x != y; // 1 (true)`,
-
   // ===== LOOPS =====
   'loops-for-basic': `// For loop - used when you know the iteration count
 sum = 0;
@@ -88,15 +67,6 @@ for i from 1 to 10 {
 }
 
 // Result: 55`,
-
-  'loops-for-countdown': `// Counting down with a for loop
-countdown = 0;
-
-for i from 10 to 1 {
-    countdown = i;
-}
-
-// Final value: 1`,
 
   'loops-while-basic': `// While loop - used when condition-based iteration
 counter = 10;
@@ -110,15 +80,15 @@ while counter > 0 {
 
 // Result: 55`,
 
-  'loops-while-search': `// Using while loop to search for a value
-numbers = 100;  // Placeholder for array concept
+  'loops-while-search': `// Using while loop to search in an array
+array numbers[10] = [5, 12, 42, 7, 9, 18, 3, 11, 25, 30];
 target = 42;
 found = 0;
 i = 0;
 
 while i < 10 {
-    if i == 5 {
-        found = 1;  // Found at position 5
+    if numbers[i] == target {
+        found = 1;  // Found target
     }
     i = i + 1;
 }`,
@@ -134,17 +104,6 @@ while row <= 3 {
         col = col + 1;
     }
     row = row + 1;
-}`,
-
-  'loops-sum-array': `// Pattern: Sum elements in a range
-sum = 0;
-i = 0;
-
-// Sum first 5 elements
-while i < 5 {
-    // In real code, would access array[i]
-    sum = sum + i;
-    i = i + 1;
 }`,
 
   // ===== SUBROUTINES/FUNCTIONS =====
@@ -239,53 +198,48 @@ result = gcd(48, 18);  // Returns 6`,
 
   // ===== ARRAYS & STRINGS =====
   'array-sum': `// Computing sum of array elements
+array data[5] = [10, 20, 30, 40, 50];
 sum = 0;
 i = 0;
-length = 5;
 
-// Conceptual array iteration
-while i < length {
-    // In practice: sum = sum + array[i]
-    sum = sum + i;
+while i < 5 {
+    sum = sum + data[i];
     i = i + 1;
 }`,
 
   'array-find-max': `// Finding maximum element in array
-max = 0;
+array nums[6] = [12, 3, 41, 7, 25, 19];
+max = nums[0];
 i = 1;
-length = 10;
 
-// Assume max starts with first element
-while i < length {
-    // In practice: if array[i] > max
-    if i > max {
-        max = i;
+while i < 6 {
+    if nums[i] > max {
+        max = nums[i];
     }
     i = i + 1;
 }`,
 
-  'string-length': `// Computing string length
-// Strings end with null terminator (0)
-str = "Hello";
-len = 0;
-i = 0;
-
-// Count characters until null terminator
-while str[i] != 0 {
-    len = len + 1;
-    i = i + 1;
+  'string-length': `// Computing string length using array-style parameter
+fn strlen(s) {
+    i = 0;
+    while s[i] != 0 {
+        i = i + 1;
+    }
+    return i;
 }
 
-// len = 5`,
+str = "Hello, world!";
+len = strlen(str);`,
 
   'array-reverse': `// Reversing an array (using two pointers)
+array a[6] = [1, 2, 3, 4, 5, 6];
 left = 0;
-right = 9;  // Array of size 10
+right = 5;
 
-// Swap elements from outside in
 while left < right {
-    // In practice: swap array[left] and array[right]
-    temp = left;
+    temp = a[left];
+    a[left] = a[right];
+    a[right] = temp;
     left = left + 1;
     right = right - 1;
 }`,
@@ -337,7 +291,10 @@ fn bubble_sort(arr, n) {
     }
 
     return arr;
-}`,
+  }
+
+  array values[8] = [9, 2, 7, 1, 8, 3, 6, 4];
+  sorted = bubble_sort(values, 8);`,
 
   'advanced-binary-search': `// Binary search in sorted array
 fn binary_search(arr, target, n) {
@@ -359,8 +316,11 @@ fn binary_search(arr, target, n) {
         }
     }
 
-    return -1;  // Not found
-}`,
+  return -1;  // Not found
+}
+
+array sorted[8] = [3, 7, 9, 12, 18, 25, 31, 42];
+index = binary_search(sorted, 25, 8);`,
 
   'advanced-sum-of-digits': `// Sum of digits in a number
 fn sum_digits(n) {
@@ -391,7 +351,6 @@ export const exampleCategories: ExampleCategory[] = [
     examples: [
       { key: 'arithmetic-basic', label: 'Basic Operations' },
       { key: 'arithmetic-order', label: 'Order of Operations' },
-      { key: 'arithmetic-accumulator', label: 'Accumulator Pattern' },
     ],
   },
   {
@@ -400,18 +359,15 @@ export const exampleCategories: ExampleCategory[] = [
       { key: 'control-if-basic', label: 'Basic If Statement' },
       { key: 'control-if-else', label: 'If-Else' },
       { key: 'control-nested-if', label: 'Nested If Statements' },
-      { key: 'control-comparison', label: 'Comparison Operators' },
     ],
   },
   {
     label: 'Loops',
     examples: [
       { key: 'loops-for-basic', label: 'For Loop (Basic)' },
-      { key: 'loops-for-countdown', label: 'For Loop (Countdown)' },
       { key: 'loops-while-basic', label: 'While Loop (Basic)' },
       { key: 'loops-while-search', label: 'While Loop (Search)' },
       { key: 'loops-nested', label: 'Nested Loops' },
-      { key: 'loops-sum-array', label: 'Sum Array Elements' },
     ],
   },
   {
