@@ -2,6 +2,10 @@
 
 Sigma16 Studio is a compiler and visualiser for the Sigma16 educational architecture.
 
+## Installing
+
+Pre-built binaries are available from the Releases page. Alternatively, follow the instructions below to manually install the program. 
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) (with npm)
