@@ -15,25 +15,34 @@ Pre-built binaries are available from the Releases page. Alternatively, follow t
 
 ## Build
 
-### 1) Install dependencies
+### 1) Clone the repository
+
+Make sure you pass the `--recurse-submodules` flag to clone the `sigma16-compiler` submodule as well.
+
+```sh
+git clone --recurse-submodules https://github.com/danial09/sigma16-studio.git
+cd sigma16-studio
+```
+
+### 2) Install dependencies
 
 ```sh
 npm install
 ```
 
-### 2) Build the WebAssembly compiler package
+### 3) Build the WebAssembly compiler package
 
 ```sh
 npm run wasm-build
 ```
 
-### 3) Build the frontend
+### 4) Build the frontend
 
 ```sh
 npm run build
 ```
 
-### 4) Build the desktop app (Tauri)
+### 5) Build the desktop app (Tauri)
 
 ```sh
 npm run tauri build
